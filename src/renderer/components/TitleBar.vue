@@ -1,9 +1,6 @@
 <template>
   <div class='title-bar draggable' @dblclick="dblclick">
     <div class='notice color-text'>
-      <span class="notice-icon">📢</span>：
-      <a class='non-draggable color-text' @click='clickUrl(store.noticeList?.[0]?.url)'>
-        {{ store.noticeList?.[0]?.title }}</a>
     </div>
     <div class='window-controls-container non-draggable color-text' v-if='isWindows'>
       <div class='window-icon codicon codicon-chrome-minimize '
