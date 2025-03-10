@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [windows-latest,macos-latest]
 
     steps:
       - name: Check out Git repository
@@ -32,6 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
         run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          $date = Get-Date -Format "yyyyMMddHHmmss"
+          $TAG_NAME = "v$date"
           git tag $TAG_NAME
           git push origin $TAG_NAME
+        shell: pwsh
