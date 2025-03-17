@@ -41,6 +41,7 @@ import { changeLanguageWrapper } from '@/renderer/utils/language'
 import SystemExtend from '@/main/utils/SystemExtend'
 import { OFFICIAL_URL } from '@/shared/utils/constant'
 import GetDataPath from '@/shared/utils/GetDataPath'
+import Ipc from '@/renderer/utils/Ipc'
 
 const store = useMainStore()
 //操作childAppList和serverList等JS代码，都要等待init完成。
@@ -50,8 +51,6 @@ store.init().then(async () => {
 })
 const userPwdModalShow = ref(false)
 const setLanguageShow = ref(false)
-
-const call = window.api.call
 
 const settings = Settings.getAll()
 store.changeTheme(settings.ThemeMode, settings.ThemeColor)
@@ -63,11 +62,11 @@ onMounted(async () => {
       await App.checkInstall()
       await initOrUpdate()
     }
-    window.api.callStatic('TrayManage', 'init')
+    Ipc.callStatic('TrayManage', 'init')
     changeLanguageWrapper(store.settings.Language)
   } catch (error) {
     await MessageBox.error(error.message ?? error, t('errorOccurredDuring', [t('initializing')]))
-    await call('appExit')
+    await Ipc.call('appExit')
   }
 
   if (isWindows) {
@@ -80,7 +79,7 @@ async function initOrUpdate() {
 
   if (isMacOS && process.arch === 'arm64' && !(await SystemExtend.isInstallRosetta())) {
     await MessageBox.error(`需要Rosetta支持，请复制命令到终端执行安装\nchildAppupdate --install-rosetta`)
-    await call('appExit')
+    await Ipc.call('appExit')
   }
   //存在initFile文件的情况下，判断是第一次安装，还是覆盖安装
   if (!await ChildApp.DirExists() &&  ! await DirUtil.Exists(GetDataPath.getSoftwareDir())) { //目录不存在说明是，第一次安装
@@ -112,7 +111,7 @@ async function winInit() {
     store.loading = false
   } catch (error) {
     await MessageBox.error(error.message ?? error, t('errorOccurredDuring', [t('initializing')]))
-    await call('appExit')
+    await Ipc.call('appExit')
   }
 }
 
@@ -123,7 +122,7 @@ async function macCreateUserCoreDir() {
     }
   } catch (error) {
     await MessageBox.error(error.message ?? error, t('errorOccurredDuring', [t('initializing')]))
-    await call('appExit')
+    await Ipc.call('appExit')
   }
 }
 
@@ -132,11 +131,11 @@ async function update() {
     store.loading = true
     const needRestart = await App.update()
     await App.deleteInitFile()
-    if(needRestart) await window.api.call('appRestart')
+    if(needRestart) await Ipc.call('appRestart')
     store.loading = false
   } catch (error) {
     await MessageBox.error(error.message ?? error, t('errorOccurredDuring', [t('update')]))
-    await call('appExit')
+    await Ipc.call('appExit')
   }
 }
 

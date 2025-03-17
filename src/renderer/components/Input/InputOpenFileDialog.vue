@@ -9,21 +9,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { FolderOpenFilled } from '@ant-design/icons-vue'
-const callStatic = window.api.callStatic
+import Ipc from '@/renderer/utils/Ipc'
+const callStatic = Ipc.callStatic
 
-const props = defineProps({ method: String, value: String, toForwardSlash: Boolean, filters: Array, readonly: Boolean })
-const emit = defineEmits(['update:value'])
+const props = defineProps({ method: String, toForwardSlash: Boolean, filters: Array, readonly: Boolean })
 
-const val = computed({
-  get() {
-    return props.value
-  },
-  set(value) {
-    emit('update:value', value)
-  }
-})
+const val = defineModel('value', { type: String })
 const method = props.method ? props.method : 'showOpenFile'
 const selectPath = async () => {
   const filters = props.filters ?? []
